@@ -22,7 +22,7 @@ export default function Profile() {
     if (user) {
       setBio(user.bio);
       setLocation(user.location);
-      itemsApi.list({ owner_id: user.id, status: undefined }).then((res) => {
+      itemsApi.list({ owner_id: user.id, status: "" }).then((res) => {
         setMyItems(res.data.items);
         setLoading(false);
       });

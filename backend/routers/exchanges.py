@@ -95,6 +95,11 @@ async def accept_request(
     target_item = db.query(Item).filter(Item.id == req.target_item_id).first()
     if target_item:
         target_item.status = ItemStatus.exchanged
+    # 将申请方提供的物品也标记为已交换
+    if req.offer_item_id:
+        offer_item = db.query(Item).filter(Item.id == req.offer_item_id).first()
+        if offer_item:
+            offer_item.status = ItemStatus.exchanged
     # 拒绝其他待处理申请
     other_requests = db.query(ExchangeRequest).filter(
         ExchangeRequest.target_item_id == req.target_item_id,
