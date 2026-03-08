@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import type { Item } from "../types";
 import { CONDITION_LABELS, STATUS_LABELS, STATUS_COLORS } from "../types";
-import { MapPin, Clock } from "lucide-react";
+import { MapPin, Clock, User } from "lucide-react";
 import { API_BASE } from "../api/client";
 
 interface Props {
@@ -78,6 +78,21 @@ export default function ItemCard({ item }: Props) {
             <span>{timeAgo(item.created_at)}</span>
           </div>
         </div>
+        {/* 发布者信息 */}
+        <Link
+          to={`/user/${item.owner_id}`}
+          onClick={(e) => e.stopPropagation()}
+          className="flex items-center gap-1.5 mt-2.5 pt-2.5 border-t border-gray-100 hover:text-primary-600 transition-colors"
+        >
+          <div className="w-5 h-5 rounded-full bg-primary-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+            {item.owner.avatar ? (
+              <img src={`${API_BASE}${item.owner.avatar}`} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <User size={12} className="text-primary-500" />
+            )}
+          </div>
+          <span className="text-xs text-gray-500 truncate hover:text-primary-600">{item.owner.username}</span>
+        </Link>
       </div>
     </Link>
   );

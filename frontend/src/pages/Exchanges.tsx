@@ -168,9 +168,11 @@ export default function Exchanges() {
                     </div>
 
                     <p className="text-xs text-gray-500 mt-0.5">
-                      {tab === "received"
-                        ? `申请人：${req.requester.username}`
-                        : `物品主：${req.owner.username}`}
+                      {tab === "received" ? (
+                        <>申请人：<Link to={`/user/${req.requester_id}`} className="hover:text-primary-600 hover:underline">{req.requester.username}</Link></>
+                      ) : (
+                        <>物品主：<Link to={`/user/${req.owner_id}`} className="hover:text-primary-600 hover:underline">{req.owner.username}</Link></>
+                      )}
                     </p>
 
                     {req.message && (

@@ -11,6 +11,7 @@ import PublishItem from "./pages/PublishItem";
 import Exchanges from "./pages/Exchanges";
 import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
+import UserProfile from "./pages/UserProfile";
 
 export default function App() {
   return (
@@ -64,6 +65,7 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/user/:userId" element={<UserProfile />} />
             </Routes>
           </main>
         </div>

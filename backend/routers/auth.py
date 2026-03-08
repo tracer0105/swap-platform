@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from core.security import get_password_hash, verify_password, create_access_token, get_current_user
 from models.user import User
+from models.item import Item, ItemStatus
 from schemas.user import UserCreate, UserOut, Token, LoginForm, UserUpdate
 import aiofiles
 import os
@@ -90,6 +91,12 @@ async def get_user_public(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="用户不存在")
+    # 统计发布物品总数与已交换数
+    total_items = db.query(Item).filter(Item.owner_id == user_id).count()
+    exchanged_items = db.query(Item).filter(
+        Item.owner_id == user_id,
+        Item.status == ItemStatus.exchanged,
+    ).count()
     return {
         "id": user.id,
         "username": user.username,
@@ -97,4 +104,6 @@ async def get_user_public(user_id: int, db: Session = Depends(get_db)):
         "bio": user.bio,
         "location": user.location,
         "created_at": user.created_at,
+        "total_items": total_items,
+        "exchanged_count": exchanged_items,
     }

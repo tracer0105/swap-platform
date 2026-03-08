@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { chatApi } from "../api";
 import type { Conversation, Message, User } from "../types";
 import { useAuthStore } from "../store/useAuthStore";
@@ -240,7 +240,7 @@ export default function Chat() {
                 )}
               </div>
               <div>
-                <p className="font-semibold text-gray-900 text-sm">{activePartner.username}</p>
+                <Link to={`/user/${activePartner.id}`} className="font-semibold text-gray-900 text-sm hover:text-primary-600 transition-colors">{activePartner.username}</Link>
                 <p className="text-xs text-gray-400 flex items-center gap-1">
                   <Circle
                     size={8}
