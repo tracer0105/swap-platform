@@ -38,6 +38,8 @@ async def create_exchange_request(
         offer_item = db.query(Item).filter(Item.id == req_data.offer_item_id).first()
         if not offer_item or offer_item.owner_id != current_user.id:
             raise HTTPException(status_code=400, detail="提供的物品不存在或不属于您")
+        if offer_item.status != ItemStatus.available:
+            raise HTTPException(status_code=400, detail="您提供的物品当前不可用于交换")
 
     exchange_req = ExchangeRequest(
         requester_id=current_user.id,
@@ -49,6 +51,9 @@ async def create_exchange_request(
     db.add(exchange_req)
     # 将目标物品状态改为交换中
     target_item.status = ItemStatus.exchanging
+    # 将申请方提供的物品也改为交换中（锁定，防止重复申请）
+    if req_data.offer_item_id:
+        offer_item.status = ItemStatus.exchanging
     db.commit()
     db.refresh(exchange_req)
     return exchange_req
@@ -128,7 +133,7 @@ async def reject_request(
         raise HTTPException(status_code=400, detail="申请状态不可更改")
 
     req.status = "rejected"
-    # 恢复物品为可用状态（如果没有其他待处理申请）
+    # 恢复目标物品为可用状态（如果没有其他待处理申请）
     other_pending = db.query(ExchangeRequest).filter(
         ExchangeRequest.target_item_id == req.target_item_id,
         ExchangeRequest.id != request_id,
@@ -136,8 +141,13 @@ async def reject_request(
     ).count()
     if other_pending == 0:
         target_item = db.query(Item).filter(Item.id == req.target_item_id).first()
-        if target_item:
+        if target_item and target_item.status == ItemStatus.exchanging:
             target_item.status = ItemStatus.available
+    # 恢复申请方提供的物品为可用状态
+    if req.offer_item_id:
+        offer_item = db.query(Item).filter(Item.id == req.offer_item_id).first()
+        if offer_item and offer_item.status == ItemStatus.exchanging:
+            offer_item.status = ItemStatus.available
     db.commit()
     db.refresh(req)
     return req
@@ -158,8 +168,14 @@ async def cancel_request(
         raise HTTPException(status_code=400, detail="申请状态不可更改")
 
     req.status = "cancelled"
+    # 恢复目标物品为可用状态
     target_item = db.query(Item).filter(Item.id == req.target_item_id).first()
     if target_item and target_item.status == ItemStatus.exchanging:
         target_item.status = ItemStatus.available
+    # 恢复申请方提供的物品为可用状态
+    if req.offer_item_id:
+        offer_item = db.query(Item).filter(Item.id == req.offer_item_id).first()
+        if offer_item and offer_item.status == ItemStatus.exchanging:
+            offer_item.status = ItemStatus.available
     db.commit()
     return {"message": "申请已取消"}

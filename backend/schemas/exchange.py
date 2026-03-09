@@ -24,6 +24,7 @@ class ExchangeRequestOut(BaseModel):
     requester: UserPublic
     owner: UserPublic
     target_item: ItemOut
+    offer_item: Optional[ItemOut] = None
 
     class Config:
         from_attributes = True
