@@ -37,6 +37,7 @@ export interface ExchangeRequest {
   requester: User;
   owner: User;
   target_item: Item;
+  offer_item: Item | null;
 }
 
 export interface Message {
