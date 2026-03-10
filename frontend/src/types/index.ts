@@ -52,6 +52,19 @@ export interface Message {
   receiver: User;
 }
 
+export interface Comment {
+  id: number;
+  item_id: number;
+  author_id: number;
+  parent_id: number | null;
+  reply_to_id: number | null;
+  content: string;
+  created_at: string;
+  author: User;
+  reply_to: User | null;
+  replies: Comment[];
+}
+
 export interface Conversation {
   partner: User;
   last_message: Message;

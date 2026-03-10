@@ -7,6 +7,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import toast from "react-hot-toast";
 import { MapPin, Clock, User, ArrowLeftRight, MessageCircle, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { API_BASE } from "../api/client";
+import CommentSection from "../components/CommentSection";
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -266,6 +267,11 @@ export default function ItemDetail() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* 评论区 */}
+      <div className="mt-8">
+        <CommentSection itemId={item.id} itemOwnerId={item.owner_id} />
       </div>
 
       {/* 交换申请弹窗 */}

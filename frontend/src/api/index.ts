@@ -61,6 +61,14 @@ export const exchangesApi = {
   cancel: (id: number) => client.put(`/api/exchanges/${id}/cancel`),
 };
 
+// ─── 评论 ─────────────────────────────────────────────────────────────────────
+export const commentsApi = {
+  list: (itemId: number) => client.get(`/api/comments/item/${itemId}`),
+  create: (itemId: number, data: { content: string; parent_id?: number; reply_to_id?: number }) =>
+    client.post(`/api/comments/item/${itemId}`, data),
+  remove: (commentId: number) => client.delete(`/api/comments/${commentId}`),
+};
+
 // ─── 聊天 ─────────────────────────────────────────────────────────────────────
 export const chatApi = {
   getConversations: () => client.get("/api/chat/conversations"),
